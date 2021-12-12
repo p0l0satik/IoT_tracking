@@ -138,10 +138,10 @@ if __name__ == "__main__":
     kills = []
     with open(server_logs) as file:
         for line in file:
-            if (line.find("dium") > 0  and line.find("killed") > 0):
+            if (line.find("dium") > 0  and (line.find("killed") > 0 or line.find("attacked") > 0)):
                 time = line[15:23]
                 kills.append(time)
-    
+    # print(kills)
     step = 200
 
     #EMG
@@ -182,13 +182,10 @@ if __name__ == "__main__":
     min_stamp = min([res_hrm[0][0], res_emg[0][0], res_mkey[0][0], res_keys[0][0], res_mxy[0][0], res_eye[0][0]])
     max_stamp = max([res_hrm[-1][0], res_emg[-1][0], res_mkey[-1][0], res_keys[-1][0], res_mxy[-1][0], res_eye[-1][0]])
 
-    # print([res_hrm[0][0], res_emg[0][0], res_mkey[0][0], res_keys[0][0], res_mxy[0][0], res_eye[0][0]], min_stamp)
-    # print([res_hrm[-1][0], res_emg[-1][0], res_mkey[-1][0], res_keys[-1][0], res_mxy[-1][0], res_eye[-1][0]], max_stamp)
-    # print(len(res_mxy), len(res_keys), len(res_eye) )
     start_time = datetime.strptime(min_stamp, "%H:%M:%S")
     stop_time = datetime.strptime(max_stamp, "%H:%M:%S")
     
-    pd_arr = [[], [], [], [], [], [], []]
+    pd_arr = [[], [], [], [], [], [], [], []]
 
     k = [0, 0, 0, 0, 0, 0]
     while(start_time < stop_time):
@@ -206,12 +203,11 @@ if __name__ == "__main__":
                 else:
                     pd_arr[n].append(None)
             pd_arr[6].append(stime+":"+str(st))
+            pd_arr[7].append(1 if (stime in kills) else 0)
+
 
         start_time = start_time + timedelta(seconds=1)
-        # print(start_time)
-    # print(pd_arr[0:5])
-    # print(np.array(pd_arr).shape)
-    d = {'timestamp':pd_arr[6], 'hrm':pd_arr[0], 'emg':pd_arr[1], 'mkey':pd_arr[2], 'keys':pd_arr[3], 'mxy':pd_arr[4], 'eye':pd_arr[5]}
+    d = {'timestamp':pd_arr[6], 'hrm':pd_arr[0], 'emg':pd_arr[1], 'mkey':pd_arr[2], 'keys':pd_arr[3], 'mxy':pd_arr[4], 'eye':pd_arr[5], 'target':pd_arr[7]}
     df = pd.DataFrame(data=d)
     df.to_csv("all.csv", index=False)
     df2 = pd.read_csv("all.csv")
