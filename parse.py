@@ -164,7 +164,7 @@ if __name__ == "__main__":
     res = []
     res_hrm = get_period_aprox(hrm, step, "hrm")
     res.append(res_hrm)
-    res_emg = get_period_aprox(hrm, step, "hrm")
+    res_emg = get_period_aprox(emg2, step, "hrm")
     res.append(res_emg)
 
     res_mkey = get_period_aprox(mkey, step, "keys")
